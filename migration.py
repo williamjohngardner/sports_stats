@@ -8,16 +8,16 @@ cursor.execute("DROP TABLE IF EXISTS batting_avg;")
 table_create = """CREATE TABLE batting_avg (
   name varchar(30),
   position varchar(30),
-  games numeric(3),
-  at_bats numeric(3),
-  runs numeric(3),
-  hits numeric(4),
-  doubles numeric(2),
-  triples numeric(2),
-  home_runs numeric(3),
-  rbi numeric(3),
-  strike_outs numeric(3),
-  average decimal (4)
+  games float(3),
+  at_bats float(3),
+  runs float(3),
+  hits float(4),
+  doubles float(2),
+  triples float(2),
+  home_runs float(3),
+  rbi float(3),
+  strike_outs float(3),
+  average float(4)
 );"""
 
 cursor.execute(table_create)
