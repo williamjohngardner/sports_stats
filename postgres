@@ -1,0 +1,211 @@
+postgres -D /usr/local/var/postgres
+
+Last login: Thu Jun  2 08:58:14 on ttys000
+┌──(~)──────────────────────────────────────────────────────────────────────(✔)─
+└──➤ createuser dbperson
+┌──(~)──────────────────────────────────────────────────────────────────────(✔)─
+└──➤ createdb learning_sql
+┌──(~)──────────────────────────────────────────────────────────────────────(✔)─
+└──➤ psql -U dbperson -d learning_sql
+Null display is "[NULL]".
+Expanded display is used automatically.
+psql (9.5.3)
+Type "help" for help.
+
+learning_sql=> CREATE TABLE person_data (
+learning_sql(> full_name varchar(50),
+learning_sql(> best_friend varchar(50),
+learning_sql(> age numeric(3),
+learning_sql(> birth_year numeric(4));
+CREATE TABLE
+learning_sql=> select * from person_data;
+ full_name | best_friend | age | birth_year
+-----------+-------------+-----+------------
+(0 rows)
+
+learning_sql=> select full_name, best_friend, age from person_data;
+ full_name | best_friend | age
+-----------+-------------+-----
+(0 rows)
+
+learning_sql=> insert into person_data values ('Bill Gardner', 'John Burroughs', 39, 1977);
+INSERT 0 1
+learning_sql=> select * from person_data;
+  full_name   |  best_friend   | age | birth_year
+--------------+----------------+-----+------------
+ Bill Gardner | John Burroughs |  39 |       1977
+(1 row)
+
+learning_sql=> \q
+┌──(~)────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────(✔)─
+└──➤ psql -U dbperson -d learning_sql
+Null display is "[NULL]".
+Expanded display is used automatically.
+psql (9.5.3)
+Type "help" for help.
+
+learning_sql=> select * from person_data;
+  full_name   |  best_friend   | age | birth_year
+--------------+----------------+-----+------------
+ Bill Gardner | John Burroughs |  39 |       1977
+(1 row)
+
+learning_sql=> insert into person_data values ('Sarah Taddei', 'Peanut', 28, 1985,);
+ERROR:  42601: syntax error at or near ")"
+LINE 1: ...to person_data values ('Sarah Taddei', 'Peanut', 28, 1985,);
+                                                                     ^
+LOCATION:  scanner_yyerror, scan.l:1081
+learning_sql=> insert into person_data values ('Jack Taddei', 'Kaylynn', 5, 2010);
+INSERT 0 1
+learning_sql=> select * from person_data
+learning_sql-> select * from person_data;
+ERROR:  42601: syntax error at or near "select"
+LINE 2: select * from person_data;
+        ^
+LOCATION:  scanner_yyerror, scan.l:1081
+learning_sql=> select * from person_data where age > 21;
+  full_name   |  best_friend   | age | birth_year
+--------------+----------------+-----+------------
+ Bill Gardner | John Burroughs |  39 |       1977
+(1 row)
+
+learning_sql=> select * from person_data;
+  full_name   |  best_friend   | age | birth_year
+--------------+----------------+-----+------------
+ Bill Gardner | John Burroughs |  39 |       1977
+ Jack Taddei  | Kaylynn        |   5 |       2010
+(2 rows)
+
+learning_sql=> insert into person_data values ('John Burroughs', 'Bill Gardner', 40, 1976);
+INSERT 0 1
+learning_sql=> select * from person_data
+learning_sql-> select * from person_data;
+ERROR:  42601: syntax error at or near "select"
+LINE 2: select * from person_data;
+        ^
+LOCATION:  scanner_yyerror, scan.l:1081
+learning_sql=> select * from person_data;
+   full_name    |  best_friend   | age | birth_year
+----------------+----------------+-----+------------
+ Bill Gardner   | John Burroughs |  39 |       1977
+ Jack Taddei    | Kaylynn        |   5 |       2010
+ John Burroughs | Bill Gardner   |  40 |       1976
+(3 rows)
+
+learning_sql=> select * from person_data where best_friend is 'Bill Gardner';
+ERROR:  42601: syntax error at or near "'Bill Gardner'"
+LINE 1: select * from person_data where best_friend is 'Bill Gardner...
+                                                       ^
+LOCATION:  scanner_yyerror, scan.l:1081
+learning_sql=> select * from person_data;
+   full_name    |  best_friend   | age | birth_year
+----------------+----------------+-----+------------
+ Bill Gardner   | John Burroughs |  39 |       1977
+ Jack Taddei    | Kaylynn        |   5 |       2010
+ John Burroughs | Bill Gardner   |  40 |       1976
+(3 rows)
+
+learning_sql=> delete from person_data where full_name = 'Jack Taddei';
+DELETE 1
+learning_sql=> select * from person_data;
+   full_name    |  best_friend   | age | birth_year
+----------------+----------------+-----+------------
+ Bill Gardner   | John Burroughs |  39 |       1977
+ John Burroughs | Bill Gardner   |  40 |       1976
+(2 rows)
+
+learning_sql=> insert into person_data values ('Jack Taddei', KayLynn, 5, 2010);
+ERROR:  42703: column "kaylynn" does not exist
+LINE 1: insert into person_data values ('Jack Taddei', KayLynn, 5, 2...
+                                                       ^
+LOCATION:  errorMissingColumn, parse_relation.c:3090
+learning_sql=> insert into person_data values ('Jack Taddei', 'KayLynn', 5, 2010);
+INSERT 0 1
+learning_sql=> insert into person_data values ('Logan Taddei', 'Dad', 2, 2014);
+INSERT 0 1
+learning_sql=> select * from person_data;
+   full_name    |  best_friend   | age | birth_year
+----------------+----------------+-----+------------
+ Bill Gardner   | John Burroughs |  39 |       1977
+ John Burroughs | Bill Gardner   |  40 |       1976
+ Jack Taddei    | KayLynn        |   5 |       2010
+ Logan Taddei   | Dad            |   2 |       2014
+(4 rows)
+
+learning_sql=> delete from person_data where age < 21;
+DELETE 2
+learning_sql=> select * from person_data;
+   full_name    |  best_friend   | age | birth_year
+----------------+----------------+-----+------------
+ Bill Gardner   | John Burroughs |  39 |       1977
+ John Burroughs | Bill Gardner   |  40 |       1976
+(2 rows)
+
+learning_sql=> update person_data age = 33 where full_name = John Burroughs;
+ERROR:  42601: syntax error at or near "="
+LINE 1: update person_data age = 33 where full_name = John Burroughs...
+                               ^
+LOCATION:  scanner_yyerror, scan.l:1081
+learning_sql=> update person_data age = 33 where full_name = John Burroughs;
+ERROR:  42601: syntax error at or near "="
+LINE 1: update person_data age = 33 where full_name = John Burroughs...
+                               ^
+LOCATION:  scanner_yyerror, scan.l:1081
+learning_sql=> select * from person_data;
+   full_name    |  best_friend   | age | birth_year
+----------------+----------------+-----+------------
+ Bill Gardner   | John Burroughs |  39 |       1977
+ John Burroughs | Bill Gardner   |  40 |       1976
+(2 rows)
+
+learning_sql=> update person_data age = 33 where full_name = 'John Burroughs';
+ERROR:  42601: syntax error at or near "="
+LINE 1: update person_data age = 33 where full_name = 'John Burrough...
+                               ^
+LOCATION:  scanner_yyerror, scan.l:1081
+learning_sql=> update person_data set age = 33 where full_name = 'John Burroughs';
+UPDATE 1
+learning_sql=> select * from person_data;
+   full_name    |  best_friend   | age | birth_year
+----------------+----------------+-----+------------
+ Bill Gardner   | John Burroughs |  39 |       1977
+ John Burroughs | Bill Gardner   |  33 |       1976
+(2 rows)
+
+learning_sql=> update person_data set age = 40 where full_name = 'John Burroughs';
+UPDATE 1
+learning_sql=> select * person_data;
+ERROR:  42601: syntax error at or near "person_data"
+LINE 1: select * person_data;
+                 ^
+LOCATION:  scanner_yyerror, scan.l:1081
+learning_sql=> select * from person_data;
+   full_name    |  best_friend   | age | birth_year
+----------------+----------------+-----+------------
+ Bill Gardner   | John Burroughs |  39 |       1977
+ John Burroughs | Bill Gardner   |  40 |       1976
+(2 rows)
+
+learning_sql=> select * from person_data;
+  full_name  | best_friend | age | birth_year
+-------------+-------------+-----+------------
+ Joel Taddei | Audrey      |  32 |       1983
+(1 row)
+
+learning_sql=> select * from person_data;
+  full_name  | best_friend | age | birth_year
+-------------+-------------+-----+------------
+ Joel Taddei | Audrey      |  32 |       1983
+ Joel Taddei | Audrey      |  32 |       1983
+ Joel Taddei | Audrey      |  32 |       1983
+ Joel Taddei | Audrey      |  32 |       1983
+ Joel Taddei | Audrey      |  32 |       1983
+(5 rows)
+
+learning_sql=> select * from person_data;
+  full_name  | best_friend | age | birth_year
+-------------+-------------+-----+------------
+ Joel Taddei | Audrey      |  32 |       1983
+(1 row)
+
+learning_sql=>
