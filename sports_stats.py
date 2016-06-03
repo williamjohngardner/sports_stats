@@ -104,4 +104,10 @@ def update_record():
         update_record()
     search_menu()
 
-search_menu()
+
+def order_by():
+    cursor.execute("select * from batting_avg order by average desc;")
+    data = cursor.fetchall()
+    print(data)
+
+order_by()
