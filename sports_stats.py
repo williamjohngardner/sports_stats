@@ -106,7 +106,15 @@ def update_record():
 
 
 def order_by():
-    cursor.execute("select * from batting_avg order by average desc;")
+    search = input("Search for top five players by category. Batting (A)verage, Home(R)uns, (H)it, (D)oubles").lower()
+    if search == "a":
+        cursor.execute("select * from batting_avg order by average desc limit 5;")
+    elif search == "r":
+        cursor.execute("select * from batting_avg order by home_runs desc limit 5;")
+    elif search == "h":
+        cursor.execute("select * from batting_avg order by hits desc limit 5;")
+    elif search == "d":
+        cursor.execute("select * from batting_avg order by doubles desc limit 5;")
     data = cursor.fetchall()
     print(data)
 
