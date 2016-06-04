@@ -6,16 +6,26 @@ cursor = connection.cursor()
 
 def search_menu():
     print("Welcome to a Baltimore Orioles' Database.")
-    choice = input("Would you like to (S)earch or (A)dd a new player to the database?").lower()
+    choice = input("Would you like to (S)earch or (A)dd a new player (U)pdate a player or (E)xit the database?").lower()
     if choice == "s":
         search_criteria()
     elif choice == "a":
         player_insert()
+    elif choice == "u":
+        update_record()
+    elif choice == "e":
+        print("Goodbye")
+        cursor.close()
+        connection.close()
+        exit()
+    else:
+        print("Invalid Entry")
+        search_menu()
 
 
 def search_criteria():
     user_prompt = input("How would you like to search the database?"
-                        "\n (N)ame | (P)osition | (B)atting Average | (M)ain Menu").lower()
+                        "\n (N)ame | (P)osition | (R)BI | (B)atting Average | (T)op Stats | (M)ain Menu").lower()
     if user_prompt == "n":
         name_search()
     elif user_prompt == "p":
@@ -24,6 +34,8 @@ def search_criteria():
         bat_avg_search()
     elif user_prompt == "m":
         search_menu()
+    elif user_prompt == "t":
+        order_by()
     else:
         print("Invalid entry")
         search_criteria()
@@ -34,7 +46,7 @@ def name_search():
     cursor.execute("select * from batting_avg where name = %s;", (search, ))
     data = cursor.fetchall()
     print(data)
-    upd_name = input("Would you like to update this player's name? (Y)es or (N)o:").lower()
+    upd_name = input("Would you like to update this player's stats? (Y)es or (N)o:").lower()
     if upd_name == "y":
         update_record()
     elif upd_name == "n":
@@ -46,7 +58,7 @@ def position_search():
     cursor.execute("select * from batting_avg where position = %s;", (position,))
     data = cursor.fetchall()
     print(data)
-    upd_name = input("Would you like to update this player's position? (Y)es or (N)o:").lower()
+    upd_name = input("Would you like to update this player's stats? (Y)es or (N)o:").lower()
     if upd_name == "y":
         update_record()
     elif upd_name == "n":
@@ -58,7 +70,7 @@ def bat_avg_search():
     cursor.execute("select * from batting_avg where average > %s;", (bat_avg,))
     data = cursor.fetchall()
     print(data)
-    upd_name = input("Would you like to update this player's batting average? (Y)es or (N)o:").lower()
+    upd_name = input("Would you like to update this player's stats? (Y)es or (N)o:").lower()
     if upd_name == "y":
         update_record()
     elif upd_name == "n":
@@ -88,25 +100,33 @@ def player_insert():
 
 
 def update_record():
-    update = input("Which record do you want to update? "
-                   "\n (N)ame | (P)osition | (B)atting Average").lower()
-    if update == "n":
-        name = input("Enter the name you want to update: ")
-        updated_name = input("Enter the new name: ")
-        cursor.execute("update batting_avg set name = %s where name = %s", (updated_name, name))
+    name = input("Enter the name of the record you wish to update: ")
+    field = input("Which field do you want to update? (N)ame, (P)osition, (B)atting Avg").lower()
+    if field == "n":
+        field = 'name'
+        new_field = input("Please enter the new name")
+        cursor.execute("update batting_avg set name = %s where name = %s", (new_field, name))
         connection.commit()
-    elif update == "p":
-        position_search()
-    elif update == "b":
-        bat_avg_search()
+    elif field == "p":
+        field = 'position'
+        new_field = input("Please enter the new position")
+        cursor.execute("update batting_avg set position = %s where name = %s", (new_field, name))
+        connection.commit()
+    elif field == "b":
+        field = 'average'
+        new_field = input("Please enter the new batting average")
+        cursor.execute("update batting_avg set average = %s where name = %s", (new_field, name))
+        connection.commit()
     else:
-        print("Invalid entry.")
+        print("Invalid entry")
         update_record()
+
     search_menu()
 
 
 def order_by():
-    search = input("Search for top five players by category. Batting (A)verage, Home(R)uns, (H)it, (D)oubles").lower()
+    search = input("Search for top five players stats by category: Batting (A)verage, Home(R)uns, (H)it, (D)oubles, "
+                   "(T)riples, (R)BI, (S)trike outs").lower()
     if search == "a":
         cursor.execute("select * from batting_avg order by average desc limit 5;")
     elif search == "r":
@@ -115,7 +135,13 @@ def order_by():
         cursor.execute("select * from batting_avg order by hits desc limit 5;")
     elif search == "d":
         cursor.execute("select * from batting_avg order by doubles desc limit 5;")
+    elif search == "t":
+        cursor.execute("select * from batting_avg order by triples desc limit 5;")
+    elif search == "r":
+        cursor.execute("select * from batting_avg order by rbi desc limit 5;")
+    elif search == "s":
+        cursor.execute("select * from batting_avg order by strike_outs desc limit 5;")
     data = cursor.fetchall()
     print(data)
 
-order_by()
+update_record()
